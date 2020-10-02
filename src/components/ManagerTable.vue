@@ -12,27 +12,27 @@
     </tr>
     <tr v-for="(item, index) in tableData" :key="index" :class="{'del-active': index === currentIndex && isDel}">
       <td>
-        <p v-if="index === currentIndex && isEdit"><label><input type="text" v-model="currentStatus['lid']"
+        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['lid']"
                                                                  disabled></label></p>
         <p v-else>{{ item['lid'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && isEdit"><label><input type="text" v-model="currentStatus['link']"></label>
+        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['link']"></label>
         </p>
         <p v-else>{{ item['link'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && isEdit"><label><input type="text" v-model="currentStatus['favicon']"></label>
+        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['favicon']"></label>
         </p>
         <p v-else>{{ item['favicon'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && isEdit"><label><input type="text" v-model="currentStatus['title']"></label>
+        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['title']"></label>
         </p>
         <p v-else>{{ item['title'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && isEdit">
+        <p v-if="index === currentIndex && (isEdit || isAdd)">
           <label>
             <input type="text" v-model="currentStatus['describe']">
           </label>
@@ -40,7 +40,7 @@
         <p v-else>{{ item['describe'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && isEdit">
+        <p v-if="index === currentIndex && (isEdit || isAdd)">
           <label>
             <select v-model="currentStatus['category']">
               <option v-for="category in categories"
@@ -77,6 +77,7 @@
 
 <script>
   import NetworkManager from '../network/manager'
+
   export default {
     name: "ManagerTable",
     data() {
@@ -91,17 +92,8 @@
       }
     },
     created: function () {
-      NetworkManager.queryTableData().then((d)=>{
-        console.log(d);
-        this.tableData = [];
-        console.log(d.data);
-        // for (let key in d.data) {
-        //
-        //   // for (let item of d.data[key]) {
-        //   //   item['category'] = key;
-        //   //   this.tableData.push(item);
-        //   // }
-        // }
+      NetworkManager.queryTableData().then((d) => {
+        this.tableData = d.data;
       });
     },
     methods: {
@@ -136,18 +128,27 @@
       btnOK(index) {
         if (this.isAdd) {
           this.isAdd = false;
-          this.tableData[index] = this.clone(this.currentStatus);
           //数据库添加
+          NetworkManager.addTableData(this.currentStatus).then(()=>{
+            this.tableData[index] = this.clone(this.currentStatus);
+            console.log(this.currentStatus);
+          });
 
         } else if (this.isEdit) {
           this.isEdit = false;
-          this.tableData[index] = this.clone(this.currentStatus);
           //数据库添加
+          NetworkManager.updateTableData(this.currentStatus).then(()=>{
+            this.tableData[index] = this.clone(this.currentStatus);
+            console.log(this.currentStatus);
+          });
+
         } else if (this.isDel) {
           this.isDel = false;
-          console.log('已经删除:' + this.tableData[index].lid);
-          this.tableData.splice(index, 1);
-          this.currentStatus = {};
+          NetworkManager.delTableData(this.tableData[index]['lid']).then(()=>{
+            console.log('已经删除:' + this.tableData[index]['lid']);
+            this.tableData.splice(index, 1);
+            this.currentStatus = {};
+          });
         }
         this.currentIndex = -1;
       },

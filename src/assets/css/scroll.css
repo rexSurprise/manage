@@ -1,8 +1,9 @@
 /*滚动条的宽度*/
 
 ::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+  width: 0px;
+  height: 0px;
+  background-color: #f00;
 }
 
 /*外层轨道。可以用display:none让其不显示，也可以添加背景图片，颜色改变显示效果*/

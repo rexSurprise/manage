@@ -17,7 +17,11 @@
         <p v-else>{{ item['lid'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['link']"></label>
+        <p v-if="index === currentIndex && (isEdit || isAdd)">
+          <label>
+          <input type="text"
+                 v-model="currentStatus['link']">
+          </label>
         </p>
         <p v-else>{{ item['link'] }}</p>
       </td>
@@ -71,6 +75,7 @@
     <tr>
       <td colspan="7">
         <button @click="addClick" :disabled="isAdd">+</button>
+        <button @click="autoFullClick" v-if="isAdd" style="margin-left: 10px;">autoFull</button>
       </td>
     </tr>
     </tfoot>
@@ -128,6 +133,7 @@
         this.currentIndex = index;
       },
       btnOK(index) {
+        console.log(this.tableData);
         if (this.isAdd) {
           this.isAdd = false;
           //数据库添加
@@ -138,6 +144,7 @@
             else {
               this.tableData[index] = this.clone(this.currentStatus);
               console.log(this.currentStatus);
+              location.reload();
             }
           });
 
@@ -168,6 +175,7 @@
           });
         }
         this.currentIndex = -1;
+        console.log(this.tableData);
       },
       btnCancel(index) {
         if (this.isAdd) {
@@ -181,6 +189,20 @@
         }
         this.currentIndex = -1;
       },
+      autoFullClick(){
+        if(this.currentStatus.link === '')return false;
+        NetworkManager.queryLinkData(this.currentStatus.link).then((d)=>{
+          if(d.code !==200){
+            alert('请求失败, 错误代码' + d.code);
+          }
+          else{
+            for(let key in d.data){
+              this.currentStatus[key] = d.data[key];
+            }
+            console.log(this.currentStatus);
+          }
+        })
+      }
     }
   }
 </script>

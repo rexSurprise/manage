@@ -8,9 +8,12 @@ export default {
     return _baseQuery('/add', {}, 'POST', data);
   },
   delTableData(lid){
-    return _baseQuery('/del', {}, 'POST', {lid});
+    return _baseQuery('/delete', {}, 'POST', {lid});
   },
   updateTableData(data){
     return _baseQuery('/update', {}, 'POST', data);
+  },
+  queryLinkData(link){
+    return _baseQuery('/link', {url: link});
   }
 }

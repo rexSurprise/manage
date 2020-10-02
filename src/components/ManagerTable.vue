@@ -94,12 +94,14 @@
       NetworkManager.queryTableData().then((d)=>{
         console.log(d);
         this.tableData = [];
-        for (let key in d.data) {
-          for (let item of d.data[key]) {
-            item['category'] = key;
-            this.tableData.push(item);
-          }
-        }
+        console.log(d.data);
+        // for (let key in d.data) {
+        //
+        //   // for (let item of d.data[key]) {
+        //   //   item['category'] = key;
+        //   //   this.tableData.push(item);
+        //   // }
+        // }
       });
     },
     methods: {

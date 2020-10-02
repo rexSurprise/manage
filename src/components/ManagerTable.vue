@@ -133,7 +133,7 @@
           //数据库添加
           NetworkManager.addTableData(this.currentStatus).then((d) => {
             if (d.code !== 200) {
-              alert('请求失败' + d.msg)
+              alert('请求失败, 错误代码' + d.code)
             }
             else {
               this.tableData[index] = this.clone(this.currentStatus);
@@ -146,7 +146,7 @@
           //数据库添加
           NetworkManager.updateTableData(this.currentStatus).then((d) => {
             if (d.code !== 200) {
-              alert('请求失败' + d.msg)
+              alert('请求失败, 错误代码' + d.code)
             }
             else {
               this.tableData[index] = this.clone(this.currentStatus);
@@ -158,7 +158,7 @@
           this.isDel = false;
           NetworkManager.delTableData(this.tableData[index]['lid']).then((d) => {
             if (d.code !== 200) {
-              alert('请求失败' + d.msg)
+              alert('请求失败, 错误代码' + d.code)
             }
             else {
               console.log('已经删除:' + this.tableData[index]['lid']);

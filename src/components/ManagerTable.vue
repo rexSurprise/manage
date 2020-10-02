@@ -13,7 +13,7 @@
     <tr v-for="(item, index) in tableData" :key="index" :class="{'del-active': index === currentIndex && isDel}">
       <td>
         <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['lid']"
-                                                                 disabled></label></p>
+                                                                            disabled></label></p>
         <p v-else>{{ item['lid'] }}</p>
       </td>
       <td>
@@ -22,12 +22,14 @@
         <p v-else>{{ item['link'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['favicon']"></label>
+        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text"
+                                                                            v-model="currentStatus['favicon']"></label>
         </p>
         <p v-else>{{ item['favicon'] }}</p>
       </td>
       <td>
-        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text" v-model="currentStatus['title']"></label>
+        <p v-if="index === currentIndex && (isEdit || isAdd)"><label><input type="text"
+                                                                            v-model="currentStatus['title']"></label>
         </p>
         <p v-else>{{ item['title'] }}</p>
       </td>
@@ -129,25 +131,40 @@
         if (this.isAdd) {
           this.isAdd = false;
           //数据库添加
-          NetworkManager.addTableData(this.currentStatus).then(()=>{
-            this.tableData[index] = this.clone(this.currentStatus);
-            console.log(this.currentStatus);
+          NetworkManager.addTableData(this.currentStatus).then((d) => {
+            if (d.code !== 200) {
+              alert('请求失败' + d.msg)
+            }
+            else {
+              this.tableData[index] = this.clone(this.currentStatus);
+              console.log(this.currentStatus);
+            }
           });
 
         } else if (this.isEdit) {
           this.isEdit = false;
           //数据库添加
-          NetworkManager.updateTableData(this.currentStatus).then(()=>{
-            this.tableData[index] = this.clone(this.currentStatus);
-            console.log(this.currentStatus);
+          NetworkManager.updateTableData(this.currentStatus).then((d) => {
+            if (d.code !== 200) {
+              alert('请求失败' + d.msg)
+            }
+            else {
+              this.tableData[index] = this.clone(this.currentStatus);
+              console.log(this.currentStatus);
+            }
           });
 
         } else if (this.isDel) {
           this.isDel = false;
-          NetworkManager.delTableData(this.tableData[index]['lid']).then(()=>{
-            console.log('已经删除:' + this.tableData[index]['lid']);
-            this.tableData.splice(index, 1);
-            this.currentStatus = {};
+          NetworkManager.delTableData(this.tableData[index]['lid']).then((d) => {
+            if (d.code !== 200) {
+              alert('请求失败' + d.msg)
+            }
+            else {
+              console.log('已经删除:' + this.tableData[index]['lid']);
+              this.tableData.splice(index, 1);
+              this.currentStatus = {};
+            }
           });
         }
         this.currentIndex = -1;

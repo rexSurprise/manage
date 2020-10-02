@@ -41,8 +41,8 @@
       </td>
       <td>
         <p v-if="index === currentIndex && isEdit">
-          <label for="type">
-            <select id="type" v-model="currentStatus['category']">
+          <label>
+            <select v-model="currentStatus['category']">
               <option v-for="category in categories"
                       :value="category">
                 {{ category }}
@@ -76,8 +76,9 @@
 </template>
 
 <script>
+  import NetworkManager from '../network/manager'
   export default {
-    name: "Table",
+    name: "ManagerTable",
     data() {
       return {
         tableData: [],
@@ -90,22 +91,16 @@
       }
     },
     created: function () {
-      let $this = this;
-      $.ajax({
-        url: '/static/js/data.json',
-        success: function (d) {
-          $this.tableData = [];
-          for (let key in d.data) {
-            for (let item of d.data[key]) {
-              item['category'] = key;
-              $this.tableData.push(item);
-            }
+      NetworkManager.queryTableData().then((d)=>{
+        console.log(d);
+        this.tableData = [];
+        for (let key in d.data) {
+          for (let item of d.data[key]) {
+            item['category'] = key;
+            this.tableData.push(item);
           }
-        },
-        error(e) {
-          console.log(e);
         }
-      })
+      });
     },
     methods: {
       clone(obj) {

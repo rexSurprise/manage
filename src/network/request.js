@@ -25,9 +25,9 @@ export function request(config) {
   return instance(config)
 }
 
-export function _baseQuery(_API, params, method="get", data={}) {
+export function _baseQuery(_url, params, method="get", data={}) {
   return request({
-    url: _API,
+    url: _url,
     method: method,
     params: params,
     data:data

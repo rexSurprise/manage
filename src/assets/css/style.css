@@ -1,0 +1,149 @@
+:root {
+  --primary: rgb(194, 31, 38);
+  --primary-bg: rgba(194, 31, 38, 0.5);
+  --primary-8: rgba(194, 31, 38, 0.8);
+  --primary-1: rgba(194, 31, 38, 0.1);
+  --table-width: 1500px;
+}
+
+* {
+  text-align: center;
+  outline-color: var(--primary-8);
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary);
+}
+
+body, html, p {
+  margin: 0;
+  padding: 0;
+}
+
+*::selection {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+td:nth-child(1) > p,
+td:nth-child(6) > p {
+  width: 150px;
+}
+
+td:nth-child(2) > p {
+  width: 250px;
+}
+
+td:nth-child(3) > p {
+  width: 300px;
+}
+
+td:nth-child(4) > p {
+  width: 180px;
+}
+
+td:nth-child(5) > p {
+  width: 400px;
+}
+td:nth-child(7) > p{
+  width: 130px;
+}
+
+/* Border styles */
+table {
+  font-family: verdana, arial, sans-serif;
+  border-collapse: collapse;
+  margin: 0 auto;
+  color: var(--primary);
+}
+
+
+table th {
+  height: 40px;
+  line-height: 40px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: var(--primary-bg);
+  font-family: '楷体', serif;
+}
+
+td, th {
+  border: 1px solid var(--primary-8);
+  margin: 0;
+  padding: 2px;
+}
+
+
+table tr:nth-child(odd) {
+  background: var(--primary-1)
+}
+
+table td p {
+  width: 100%;
+  height: 50px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 5px;
+}
+table td p.button{
+  justify-content:space-between;
+}
+
+table td p label {
+  width: 90%;
+}
+
+td input, td select {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  font-size: 16px;
+  color: var(--primary);
+  -webkit-border-radius: .25rem;
+  -moz-border-radius: .25rem;
+  border-radius: .25rem;
+  border-color: var(--primary-bg);
+}
+
+button {
+  border: 0;
+  height: 30px;
+  line-height: 30px;
+  width: 60px;
+  background-color: var(--primary-1);
+  -webkit-border-radius: .25rem;
+  -moz-border-radius: .25rem;
+  border-radius: .25rem;
+  transition: background .75s;
+  color: var(--primary);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+button:hover {
+  background-color: var(--primary-8);
+  color: #fff;
+}
+
+button:active {
+  background-color: var(--primary);
+}
+button:disabled{
+  background-color: var(--primary-bg);
+  border: 1px solid var(--primary-8);
+  color: #fff;
+}
+table tr.del-active{
+  background-color:var(--primary-8);
+}
+table tr.del-active button{
+  color: #fff;
+}

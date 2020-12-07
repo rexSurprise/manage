@@ -19,8 +19,8 @@
       <td>
         <p v-if="index === currentIndex && (isEdit || isAdd)">
           <label>
-          <input type="text"
-                 v-model="currentStatus['link']">
+            <input type="text"
+                   v-model="currentStatus['link']">
           </label>
         </p>
         <p v-else>{{ item['link'] }}</p>
@@ -74,8 +74,13 @@
     <tfoot>
     <tr>
       <td colspan="7">
-        <button @click="addClick" :disabled="isAdd">+</button>
+        <button @click="addClick()" :disabled="isAdd">+</button>
         <button @click="autoFullClick" v-if="isAdd" style="margin-left: 10px;">autoFull</button>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="7">
+        <p class="status-bar" v-html="statusMsg"></p>
       </td>
     </tr>
     </tfoot>
@@ -95,15 +100,27 @@
         isAdd: false,
         isEdit: false,
         isDel: false,
-        categories: ['官方推荐', '在线工具', '资源仓库', '媒体解析', '其他网站']
+        statusMsg: '',
+        categories: ['官方推荐', '在线工具', '资源仓库', '媒体解析', '其他网站', 'SEARCH']
       }
     },
     created: function () {
-      NetworkManager.queryTableData().then((d) => {
-        this.tableData = d.data;
-      });
+      this.queryData();
+    },
+    mounted() {
+      this.setStatusMsg('Ready');
     },
     methods: {
+      setStatusMsg(msg, type = 'info') {
+        this.statusMsg = `<strong style="color: var(--${type});">${msg}</strong>`;
+      },
+      queryData(){
+        this.setStatusMsg('QueryData...');
+        NetworkManager.queryTableData().then((d) => {
+          this.tableData = d.data;
+
+        });
+      },
       clone(obj) {
         if (obj === null) return null;
         if (typeof obj !== 'object') return obj;
@@ -121,30 +138,33 @@
         this.isEdit = true;
         this.currentIndex = index;
         this.currentStatus = this.clone(this.tableData[index]);
+        this.setStatusMsg('Editing');
       },
       addClick() {
         this.currentIndex = this.tableData.length;
         this.isAdd = true;
-        this.tableData.push({lid: '', link: '', favicon: '', title: '', describe: ''});
-        this.currentStatus = {};
+        this.tableData.push({});
+        this.currentStatus = {category: '官方推荐'};
+        this.setStatusMsg('Adding');
       },
       delClick(index) {
         this.isDel = true;
         this.currentIndex = index;
+        this.setStatusMsg('Deleting');
       },
       btnOK(index) {
-        console.log(this.tableData);
         if (this.isAdd) {
           this.isAdd = false;
           //数据库添加
           NetworkManager.addTableData(this.currentStatus).then((d) => {
             if (d.code !== 200) {
-              alert('请求失败, 错误代码' + d.code)
+              this.setStatusMsg('Add failed, error code: ' + d.code, 'error')
             }
             else {
-              this.tableData[index] = this.clone(this.currentStatus);
-              console.log(this.currentStatus);
-              location.reload();
+              //this.tableData[index] = this.currentStatus 不会响应式的更新数据
+              this.tableData.splice(index, index, this.clone(this.currentStatus));
+              this.setStatusMsg(d.msg, 'success');
+              this.queryData();
             }
           });
 
@@ -153,11 +173,11 @@
           //数据库添加
           NetworkManager.updateTableData(this.currentStatus).then((d) => {
             if (d.code !== 200) {
-              alert('请求失败, 错误代码' + d.code)
+              this.setStatusMsg('Edit failed, error code: ' + d.code, 'error')
             }
             else {
-              this.tableData[index] = this.clone(this.currentStatus);
-              console.log(this.currentStatus);
+              this.tableData.splice(index, index, this.clone(this.currentStatus));
+              this.setStatusMsg(d.msg, 'success');
             }
           });
 
@@ -165,17 +185,18 @@
           this.isDel = false;
           NetworkManager.delTableData(this.tableData[index]['lid']).then((d) => {
             if (d.code !== 200) {
-              alert('请求失败, 错误代码' + d.code)
+              this.setStatusMsg('Delete failed, error code: ' + d.code, 'error')
             }
             else {
-              console.log('已经删除:' + this.tableData[index]['lid']);
               this.tableData.splice(index, 1);
               this.currentStatus = {};
+              this.setStatusMsg(d.msg, 'success');
             }
           });
         }
+        this.queryData();
+        setTimeout(() => this.setStatusMsg('Ready'), 1000);
         this.currentIndex = -1;
-        console.log(this.tableData);
       },
       btnCancel(index) {
         if (this.isAdd) {
@@ -188,18 +209,22 @@
           this.isDel = false;
         }
         this.currentIndex = -1;
+        this.setStatusMsg('Ready');
       },
-      autoFullClick(){
-        if(this.currentStatus.link === '')return false;
-        NetworkManager.queryLinkData(this.currentStatus.link).then((d)=>{
-          if(d.code !==200){
-            alert('请求失败, 错误代码' + d.code);
+      autoFullClick() {
+        this.setStatusMsg('autoFulling');
+        if (this.currentStatus.link === '') return false;
+        NetworkManager.queryLinkData(this.currentStatus.link).then((d) => {
+          if (d.code !== 200) {
+            this.setStatusMsg('autoFull failed, error code: ' + d.code, 'error')
           }
-          else{
-            for(let key in d.data){
+          else {
+            for (let key in d.data) {
               this.currentStatus[key] = d.data[key];
             }
-            console.log(this.currentStatus);
+            this.currentStatus = this.clone(this.currentStatus);
+            this.setStatusMsg('autoFull success', 'success');
+            setTimeout(() => this.setStatusMsg('Ready'), 1000);
           }
         })
       }

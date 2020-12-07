@@ -3,7 +3,10 @@
   --primary-bg: rgba(194, 31, 38, 0.5);
   --primary-8: rgba(194, 31, 38, 0.8);
   --primary-1: rgba(194, 31, 38, 0.1);
-  --table-width: 1500px;
+  --success: #28a745;
+  --info: #17a2b8;
+  --warning: #ffc107;
+  --error: #dc3545;
 }
 
 * {
@@ -54,7 +57,7 @@ td:nth-child(7) > p{
 table {
   font-family: verdana, arial, sans-serif;
   border-collapse: collapse;
-  margin: 0 auto;
+  margin: 0 auto 200px auto;
   color: var(--primary);
 }
 
@@ -146,4 +149,13 @@ table tr.del-active{
 }
 table tr.del-active button{
   color: #fff;
+}
+table tr .status-bar{
+  font-weight: bolder;
+  height: 30px;
+  line-height: 30px;
+  font-size: 20px;
+  justify-content: left;
+  text-align: left;
+  width: 1000px;
 }

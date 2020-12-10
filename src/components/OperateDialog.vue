@@ -1,6 +1,6 @@
 <template>
     <custom-dialog :show="show" @before-close="show=false" title="添加链接" width="500px"
-                   @opened="$refs.form.resetFields()">
+                   @opened="$refs.form.resetFields()" showconfirm>
         <el-main slot="body">
             <el-form ref="form" :model="formData"  :rules="verifyRules" status-icon size="mini" label-width="80px">
                 <el-form-item label="网站标题" prop="title" required>

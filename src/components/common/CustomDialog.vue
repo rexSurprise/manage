@@ -11,7 +11,7 @@
     @closed="$emit('closed', $event)"
     :before-close="handleClose">
     <div class="save-container" v-if="showconfirm">
-      <span class="saveClose" @click="confirmClick"><i></i>{{confirm}}</span>
+      <el-button icon="el-icon-printer"  @click="confirmClick" size="mini">{{confirm}}</el-button>
     </div>
     <slot name="body"></slot>
     <slot name="footer" slot="footer"></slot>
@@ -60,27 +60,12 @@
 
 <style>
   .custom-dialog .save-container {
-    height: 40px;
+    height: 30px;
     border-bottom: 1px solid #ccc;
     display: flex;
     justify-content: flex-end;
     align-items: flex-end;
     padding: 0 40px 2px 40px;
-  }
-
-  .custom-dialog .saveClose {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    cursor: pointer;
-  }
-
-  .custom-dialog .saveClose:hover {
-    background-color: #ddd;
-    border-color: transparent;
   }
   .custom-dialog .el-dialog__headerbtn {
     width: 36px;

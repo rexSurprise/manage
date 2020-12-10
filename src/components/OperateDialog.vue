@@ -107,9 +107,6 @@
             showDialog(){
                 this.show = true;
             },
-            closeDialog(){
-                this.show = false;
-            },
             autoFull(){
                 this.$refs.form.validateField('link', errorMessage => {
                     if(!errorMessage){

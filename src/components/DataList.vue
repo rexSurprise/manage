@@ -3,19 +3,26 @@
     <el-main>
       <div class="search-box">
         <h1 style="width: 100%;text-align: center;color: #fff;">数据总览</h1>
-        <el-input
-          size="small"
-          placeholder="请输入内容"
-          v-model="searchKeyWord"
-          @keyup.enter.native="searchList"
-          style="width: 200px;position: fixed; top: 2rem;right: 3rem">
-          <i slot="suffix" class="el-input__icon el-icon-search"></i>
-        </el-input>
+        <div class="opt-box">
+          <el-input
+            size="small"
+            style="width: 200px;"
+            placeholder="请输入内容"
+            v-model="searchKeyWord"
+            @keyup.enter.native="searchList">
+            <i slot="suffix" class="el-input__icon el-icon-search"></i>
+          </el-input>
+          <el-button size="small"
+                     @click="appendData"
+                     plain icon="el-icon-plus">添加链接
+          </el-button>
+        </div>
       </div>
       <el-table
         style="width: 100%"
         :data="dataList"
         height="calc(100vh - 100px)"
+        :row-key="row=>row.lid"
         border>
         <el-table-column
           type="selection"
@@ -45,6 +52,10 @@
                          prop="link"
                          show-overflow-tooltip>
         </el-table-column>
+        <el-table-column label="类型"
+                         prop="category"
+                         show-overflow-tooltip
+        ></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="{$index}">
             <el-button size="small" @click="editRow($index)"
@@ -52,7 +63,9 @@
             </el-button>
             <i style="display: inline-block;width: 10px;"></i>
             <el-popconfirm
-              title="这是一段内容确定删除吗？"
+              icon-color="red"
+              @confirm="$refs.optDialog.deleteLinkData(dataList[$index].lid)"
+              title="确定删除吗？"
             >
               <el-button
                 slot="reference"
@@ -64,14 +77,17 @@
           </template>
         </el-table-column>
       </el-table>
-      <custom-dialog :show="show" @before-close="show=false"></custom-dialog>
+      <operate-dialog ref="optDialog"
+                      @append-data="queryDataList"
+                      @update-data="queryDataList">
+      </operate-dialog>
     </el-main>
   </el-container>
 </template>
 
 <script>
   import NetworkManager from '../network/manager'
-  import CustomDialog from './common/CustomDialog'
+  import OperateDialog from "./OperateDialog";
 
   export default {
     name: "DataList",
@@ -84,23 +100,31 @@
       }
     },
     created() {
-      NetworkManager.queryTableData().then(res => {
-        this.fixedDataList = this.dataList = res.data;
-      })
+      this.queryDataList()
     },
     methods: {
       editRow($index) {
-        console.log(this.dataList[$index]);
+        const _data = {};
+        Object.keys(this.dataList[$index]).forEach(key => _data[key] = this.dataList[$index][key]);
+        this.$refs.optDialog.showDialog(true, _data);
         this.show = true;
       },
       searchList() {
         this.dataList =
           this.fixedDataList.filter(row => JSON.stringify(row).toLowerCase().search(
             this.searchKeyWord.toLowerCase()) !== -1)
+      },
+      appendData() {
+        this.$refs.optDialog.showDialog();
+      },
+      queryDataList(){
+        NetworkManager.queryTableData().then(res => {
+          this.fixedDataList = this.dataList = res.data;
+        })
       }
     },
     components: {
-      CustomDialog
+      OperateDialog,
     }
   }
 </script>
@@ -139,26 +163,43 @@
   .el-table__body tr:hover > td {
     background: linear-gradient(#bfcffbf0, #b7fceef0, #bfdecaf0) !important;
   }
-  thead .cell{
+
+  thead .cell {
     color: antiquewhite;
   }
-  .cell{
+
+  .cell {
     text-align: center;
   }
-  .el-table{
+
+  .el-table {
     background: transparent;
   }
-  .el-table::before,.el-table::after{
+
+  .el-table::before, .el-table::after {
     height: 0;
     width: 0;
   }
-  .el-table--border, .el-table--group{
+
+  .el-table--border, .el-table--group {
     border: none;
   }
-  .el-table--border::after, .el-table--group::after{
+
+  .el-table--border::after, .el-table--group::after {
     width: 0;
   }
-  .el-table__empty-text{
+
+  .el-table__empty-text {
     color: #eee;
+  }
+
+  .opt-box {
+    width: 300px;
+    position: fixed;
+    top: 2rem;
+    right: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 </style>

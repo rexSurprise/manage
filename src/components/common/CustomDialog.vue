@@ -20,7 +20,7 @@
 
 <script>
   export default {
-    name: "custom_dialog",
+    name: "CustomDialog",
     props: {
       width: {
         type: String,
@@ -28,7 +28,7 @@
       },
       title: {
         type: String,
-        default: 'customDialog',
+        default: 'CustomDialog',
       },
       confirm: {
         type: String,

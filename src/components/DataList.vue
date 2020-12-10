@@ -71,7 +71,7 @@
 
 <script>
   import NetworkManager from '../network/manager'
-  import CustomDialog from './common/custom_dialog'
+  import CustomDialog from './common/CustomDialog'
 
   export default {
     name: "DataList",

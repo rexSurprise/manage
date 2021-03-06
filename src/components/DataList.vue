@@ -8,9 +8,12 @@
             size="small"
             style="width: 200px;"
             placeholder="请输入内容"
+            clearable
             v-model="searchKeyWord"
+            @clear="searchList"
             @keyup.enter.native="searchList">
-            <i slot="suffix" class="el-input__icon el-icon-search"></i>
+            <i slot="suffix"
+               class="el-input__icon el-icon-search" @click="searchList"></i>
           </el-input>
           <el-button size="small"
                      @click="appendData"
@@ -32,31 +35,44 @@
                          label="序号"
                          width="60"
         ></el-table-column>
-        <el-table-column label="ID"
-                         prop="lid"
+        <el-table-column label="图标"
+                         prop="favicon"
+                         width="50"
                          show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <el-avatar :size="30" :src="row.favicon" @error="true">
+              <el-avatar :size="30" icon="el-icon-link"></el-avatar>
+            </el-avatar>
+          </template>
         </el-table-column>
         <el-table-column label="标题"
                          prop="title"
                          show-overflow-tooltip>
         </el-table-column>
-        <el-table-column label="说明"
-                         prop="describe"
+        <el-table-column label="链接"
+                         prop="link"
+                         width="150"
                          show-overflow-tooltip>
+          <template slot-scope="{row}">
+            <el-link :underline="false" type="primary" :href="row.link" target="_blank">
+              {{row.link}}
+            </el-link>
+          </template>
         </el-table-column>
         <el-table-column label="图标"
                          prop="favicon"
                          show-overflow-tooltip>
         </el-table-column>
-        <el-table-column label="链接"
-                         prop="link"
-                         show-overflow-tooltip>
-        </el-table-column>
+
         <el-table-column label="类型"
                          prop="category"
-                         show-overflow-tooltip
+                         width="100"
         ></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="说明"
+                         prop="describe"
+                         show-overflow-tooltip>
+        </el-table-column>
+        <el-table-column label="操作" width="180">
           <template slot-scope="{$index}">
             <el-button size="small" @click="editRow($index)"
                        type="warning" plain>编辑
@@ -79,6 +95,7 @@
       </el-table>
       <operate-dialog ref="optDialog"
                       @append-data="queryDataList"
+                      @delete-data="queryDataList"
                       @update-data="queryDataList">
       </operate-dialog>
     </el-main>
@@ -105,7 +122,9 @@
     methods: {
       editRow($index) {
         const _data = {};
-        Object.keys(this.dataList[$index]).forEach(key => _data[key] = this.dataList[$index][key]);
+        Object.keys(this.dataList[$index]).forEach(key => {
+          _data[key] = this.dataList[$index][key]
+        });
         this.$refs.optDialog.showDialog(true, _data);
         this.show = true;
       },

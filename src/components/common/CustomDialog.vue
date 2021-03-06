@@ -96,4 +96,7 @@
   .custom-dialog.el-dialog>.el-dialog__body{
     padding: 0;
   }
+  .custom-dialog.el-dialog>.el-dialog__header>.el-dialog__headerbtn:hover{
+    background-color: #FF4E61;
+  }
 </style>

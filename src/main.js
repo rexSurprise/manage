@@ -16,6 +16,12 @@ Vue.directive('drag-move', {
     // 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
     const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
     dialogHeaderEl.onmousedown = (e) => {
+      if([...e.target.classList].includes('el-dialog__headerbtn') ||
+        [...e.target.classList].includes('el-dialog__close')){
+        document.onmousemove = null;
+        document.onmouseup = null;
+        return
+      }
       // 鼠标按下，计算当前元素距离可视区的距离
       const disX = e.clientX - dialogHeaderEl.offsetLeft;
       const disY = e.clientY - dialogHeaderEl.offsetTop;

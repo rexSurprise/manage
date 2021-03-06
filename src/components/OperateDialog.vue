@@ -162,7 +162,7 @@
         })
       },
       updateLinkData(){
-        NetworkManager.addTableData(this.formData).then(res=>{
+        NetworkManager.updateTableData(this.formData).then(res=>{
           if (res.code !== 200) {
             this.$alert('数据更新失败! 错误代码: ' + res.code, {type:'error'})
           }else{

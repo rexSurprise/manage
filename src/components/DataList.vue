@@ -26,10 +26,12 @@
         :data="dataList"
         v-loading="loading"
         height="calc(100vh - 120px)"
+        ref="table"
         :row-key="row=>row.lid"
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="rgba(0, 0, 0, 0.1)"
+        @row-click="rowClick"
         border>
         <el-table-column
           type="selection"
@@ -168,6 +170,9 @@
       handleCurrentChange(currentPage){
         this.page = currentPage
         this.queryDataList()
+      },
+      rowClick(row){
+        this.$refs['table'].toggleRowSelection(row)
       }
     },
     components: {

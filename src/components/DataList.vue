@@ -1,31 +1,35 @@
 <template>
   <el-container>
-    <el-main>
+    <el-header height="30" class="header">
+      <i></i>
+      <h2 style="margin:10px 0">导航链接管理</h2>
       <div class="search-box">
-        <h1 style="width: 100%;text-align: center;color: #fff;">数据总览</h1>
-        <div class="opt-box">
-          <el-input
-            size="small"
-            style="width: 200px;"
-            placeholder="请输入内容"
-            clearable
-            v-model="searchKeyWord"
-            @clear="searchList"
-            @keyup.enter.native="searchList">
-            <i slot="suffix"
-               class="el-input__icon el-icon-search" @click="searchList"></i>
-          </el-input>
-          <el-button size="small"
-                     @click="appendData"
-                     plain icon="el-icon-plus">添加链接
-          </el-button>
-        </div>
-      </div>
+        <el-input
+        size="small"
+        style="width: 200px;"
+        placeholder="请输入内容"
+        clearable
+        v-model="searchKeyWord"
+        @clear="searchList"
+        @keyup.enter.native="searchList">
+        <i slot="suffix"
+           class="el-input__icon el-icon-search" @click="searchList"></i>
+      </el-input>
+        <el-button size="small"
+                   @click="appendData"
+                   plain icon="el-icon-plus">添加链接
+        </el-button></div>
+    </el-header>
+    <el-main>
       <el-table
         style="width: 100%"
         :data="dataList"
-        height="calc(100vh - 100px)"
+        v-loading="loading"
+        height="calc(100vh - 120px)"
         :row-key="row=>row.lid"
+        element-loading-text="拼命加载中"
+        element-loading-spinner="el-icon-loading"
+        element-loading-background="rgba(0, 0, 0, 0.1)"
         border>
         <el-table-column
           type="selection"
@@ -33,6 +37,7 @@
         ></el-table-column>
         <el-table-column type="index"
                          label="序号"
+                         :index="$index=>(page - 1) * rows + $index + 1"
                          width="60"
         ></el-table-column>
         <el-table-column label="图标"
@@ -93,6 +98,16 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="page"
+        :page-sizes="[20, 50, 100, 200, 300, 400]"
+        :page-size="rows"
+        background
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total">
+      </el-pagination>
       <operate-dialog ref="optDialog"
                       @append-data="queryDataList"
                       @delete-data="queryDataList"
@@ -110,10 +125,12 @@
     name: "DataList",
     data() {
       return {
-        fixedDataList: [],
         dataList: [],
         searchKeyWord: '',
-        show: false
+        loading: false,
+        rows: 20,
+        page: 1,
+        total: 0
       }
     },
     created() {
@@ -121,25 +138,36 @@
     },
     methods: {
       editRow($index) {
-        const _data = {};
-        Object.keys(this.dataList[$index]).forEach(key => {
-          _data[key] = this.dataList[$index][key]
-        });
-        this.$refs.optDialog.showDialog(true, _data);
-        this.show = true;
+        this.$refs['optDialog'].showDialog(true, {...this.dataList[$index]});
       },
       searchList() {
-        this.dataList =
-          this.fixedDataList.filter(row => JSON.stringify(row).toLowerCase().search(
-            this.searchKeyWord.toLowerCase()) !== -1)
+        this.queryDataList({keyword:this.searchKeyWord})
       },
       appendData() {
         this.$refs.optDialog.showDialog();
       },
-      queryDataList(){
-        NetworkManager.queryTableData().then(res => {
-          this.fixedDataList = this.dataList = res.data;
-        })
+      queryDataList(queryData={}){
+        const _query = {...queryData}
+        _query.rows = this.rows
+        _query.page = this.page
+        this.loading = true
+        NetworkManager.queryTableData(_query).then(res => {
+          if(res.code !== 200){
+            this.loading = false
+            return this.$error('数据加载失败!,错误代码' + res.code)
+          }
+          this.dataList = res.data
+          this.total = res.total
+          this.loading = false
+        }).catch(_=>this.$error())
+      },
+      handleSizeChange(pageSize){
+        this.rows = pageSize
+        this.queryDataList()
+      },
+      handleCurrentChange(currentPage){
+        this.page = currentPage
+        this.queryDataList()
       }
     },
     components: {
@@ -149,26 +177,36 @@
 </script>
 
 <style>
-  body {
+  html,body {
     margin: 0;
     padding: 0;
   }
 
-  .search-box {
+  .header {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    width: 100%;
-    height: 40px;
-    text-align: right;
-    margin-bottom: 20px;
+    justify-content: center;
+    text-align: center;
   }
-
+  .header>*{
+    flex-basis: 33.33%
+  }
+  .search-box{
+    display: flex;
+    align-self: flex-end;
+    justify-content: flex-end;
+  }
+  .el-container > .el-main,.header{
+    padding: 5px;
+  }
   .el-table__header thead {
     background-image: linear-gradient(rgba(79, 160, 196, 0.8), rgba(70, 200, 255, 0.8));
     color: #000;
   }
 
+  .el-table td, .el-table th{
+    padding: 5px 0;
+  }
   .el-table th, .el-table tr {
     background: none;
   }
@@ -208,10 +246,6 @@
     width: 0;
   }
 
-  .el-table__empty-text {
-    color: #eee;
-  }
-
   .opt-box {
     width: 300px;
     position: fixed;
@@ -220,5 +254,11 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+  .el-pagination{
+    justify-content: center;
+    height: 45px;
+    display: flex;
+    align-items: center;
   }
 </style>

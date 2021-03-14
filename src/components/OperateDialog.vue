@@ -135,28 +135,28 @@
       autoFull() {
         this.$refs.form.validateField('link', errorMessage => {
           if (!errorMessage) {
-            this.autoFulling = true;
+            this.autoFulling = true
             NetworkManager.queryLinkData(this.formData.link).then(res=>{
               if (res.code !== 200) {
-                this.$alert('数据获取失败! 错误代码: ' + res.code, {type:'error'})
+                this.$error('数据获取失败! 错误代码: ' + res.code)
               }else{
-                this.$message({message:'数据获取完成',type:'success'});
-                this.autoFulling = false;
-                Object.keys(res.data).forEach(key=>this.formData[key]=res.data[key])
+                this.$success('数据获取完成')
+                this.autoFulling = false
+                this.formData = {...res.data}
               }
             })
           } else {
-            this.$alert(errorMessage, {type: 'error'});
+            this.$error(errorMessage)
           }
         })
       },
       appendLinkData(){
         NetworkManager.addTableData(this.formData).then(res=>{
           if (res.code !== 200) {
-            this.$alert('数据添加失败! 错误代码: ' + res.code, {type:'error'})
+            this.$error('数据添加失败! 错误代码: ' + res.code)
           }else{
-            this.$message({message:'数据添加完成',type:'success'});
-            this.show = false;
+            this.$success('数据添加完成')
+            this.show = false
             this.$emit('append-data', this.formData)
           }
         })
@@ -164,10 +164,10 @@
       updateLinkData(){
         NetworkManager.updateTableData(this.formData).then(res=>{
           if (res.code !== 200) {
-            this.$alert('数据更新失败! 错误代码: ' + res.code, {type:'error'})
+            this.$error('数据更新失败! 错误代码: ' + res.code)
           }else{
-            this.$message({message:'数据更新完成',type:'success'});
-            this.show = false;
+            this.$success('数据更新完成')
+            this.show = false
             this.$emit('update-data', this.formData)
           }
         })
@@ -175,10 +175,10 @@
       deleteLinkData(lid){
         NetworkManager.delTableData(lid).then(res=>{
           if (res.code !== 200) {
-            this.$alert('数据删除失败! 错误代码: ' + res.code, {type:'error'})
+            this.$error('数据删除失败! 错误代码: ' + res.code)
           }else{
-            this.$message({message:'数据删除完成',type:'success'});
-            this.show = false;
+            this.$success('数据删除完成')
+            this.show = false
             this.$emit('delete-data', lid)
           }
         })

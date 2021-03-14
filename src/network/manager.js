@@ -1,19 +1,19 @@
 import {_baseQuery} from './request'
 
 export default {
-  queryTableData(){
-    return _baseQuery('/queryAll', {});
+  queryTableData(data){
+    return _baseQuery('/queryAll', data);
   },
   addTableData(data){
-    return _baseQuery('/add', {}, 'POST', data);
+    return _baseQuery('/add', data);
   },
   delTableData(lid){
-    return _baseQuery('/delete', {}, 'POST', {lid});
+    return _baseQuery('/delete', {lid});
   },
   updateTableData(data){
-    return _baseQuery('/update', {}, 'POST', data);
+    return _baseQuery('/update', data);
   },
-  queryLinkData(link){
-    return _baseQuery('/link', {url: link});
+  queryLinkData(url){
+    return _baseQuery('/link', {url});
   }
 }

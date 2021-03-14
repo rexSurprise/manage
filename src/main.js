@@ -12,6 +12,7 @@ Vue.directive('drag-move', {
   bind(el, binding, vnode, oldVnode) {
     const dialogHeaderEl = el.querySelector('.el-dialog__header');
     const dragDom = el.querySelector('.el-dialog');
+    const headerbtn = el.querySelector('.el-dialog__headerbtn');
     dialogHeaderEl.style.cursor = 'move';
     // 获取原有属性 ie dom元素.currentStyle 火狐谷歌 window.getComputedStyle(dom元素, null);
     const sty = dragDom.currentStyle || window.getComputedStyle(dragDom, null);
@@ -32,9 +33,9 @@ Vue.directive('drag-move', {
         styL = +document.body.clientWidth * (+sty.left.replace(/\%/g, '') / 100);
         styT = +document.body.clientHeight * (+sty.top.replace(/\%/g, '') / 100);
       }else {
-        styL = +sty.left.replace(/\px/g, '');
-        styT = +sty.top.replace(/\px/g, '');
-      };
+        styL = +sty.left.replace(/px/g, '');
+        styT = +sty.top.replace(/px/g, '');
+      }
       document.onmousemove = function (e) {
         // 通过事件委托，计算移动的距离
         const l = e.clientX - disX;
@@ -53,8 +54,13 @@ Vue.directive('drag-move', {
   }
 });
 
+Vue.prototype.$error = function(msg='数据加载失败!', title='错误'){
+  return this.$alert(msg, title, {type: 'error'})
+}
 
-
+Vue.prototype.$success = function(msg){
+  return this.$message.success(msg)
+}
 
 new Vue({
   render: h => h(App),
